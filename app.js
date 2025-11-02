@@ -166,7 +166,7 @@ module.exports = class OlistoApp extends Homey.App {
       if (!buttonId) {
         throw new Error('Button ID is not provided');
       }
-      const response = await axios.post(`https://connect.olisto.com/channel/triggi-buttons/push/${buttonId}?phone=undefined`, {}, {
+      const response = await axios.post(`https://connect.olisto.com/channel/triggi-buttons/push/${buttonId}`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
