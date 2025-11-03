@@ -40,6 +40,11 @@ module.exports = class OlistoApp extends Homey.App {
       "button", async (query, args) => this.getButtons(query));
       this.homey.setInterval(() => this.checkLogin(), 900000);
       this.log('Olisto has been initialized');
+      try {
+        await this.checkLogin();
+      } catch (error) {
+        this.log('Initial Olisto login check failed: ', error);
+      }
     } catch (error) {
       this.log('Error during Olisto initialization: ', error);
     }
