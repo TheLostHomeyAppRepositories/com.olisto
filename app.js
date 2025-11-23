@@ -124,44 +124,23 @@ module.exports = class OlistoApp extends Homey.App {
   async getButtons(query) {
     try {
       const token = await this.getAuthToken();
-      
-      const [channelsResponse, colorsResponse] = await Promise.all([
-        axios.get('https://connect.olisto.com/api/v1/channelaccounts?showUnits=true', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }),
-        axios.get('https://homey-olisto.vercel.app/api/now-button-colors')
-      ]);
-      
-      const data = channelsResponse.data;
-      const colorMap = new Map(
-        colorsResponse.data.map(c => [c.hex_color.toLowerCase(), c.url])
-      );
-      
+      const channels = await axios.get('https://connect.olisto.com/api/v1/channelaccounts?showUnits=true', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = channels.data;
       const buttons = data.find(
         c => c.channel === "triggi-buttons" || c.name === "triggi-buttons"
       );
-      
       const units = buttons
-        ? buttons.units.filter(u => !u.hideFromChannelDetails)
-        : [];
-      
-      const results = units.map(u => {
-        const result = {
-          id: u._id,
-          name: u.name,
-        };
-        
-        const hexColor = u.details?.color?.toLowerCase();
-        if (hexColor && colorMap.has(hexColor)) {
-          const url = colorMap.get(hexColor);
-          result.image = url;
-        }
-        
-        return result;
-      });
-      
+      ? buttons.units.filter(u => !u.hideFromChannelDetails)
+      : [];
+      const results = units.map(u => ({
+        id: u._id,
+        name: u.name,
+        image: `https://homey-olisto.vercel.app/api/color/${u.details.color.replace('#', '')}`
+      }));
       return results.filter((result) => {
         return result.name.toLowerCase().includes(query.toLowerCase());
       });
