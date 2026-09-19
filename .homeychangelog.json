@@ -85,5 +85,8 @@
   },
   "1.1.18": {
     "en": "Added privacy policy"
+  },
+  "1.1.19": {
+    "en": "Fixed logging"
   }
 }
